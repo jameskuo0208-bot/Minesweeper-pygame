@@ -164,6 +164,26 @@ def flood_fill(board, clckdr, clckdc):
                     if 0<=y+dy<r and 0<=x+dx<c:
                         if not board[y+dy][x+dx].clicked: stack.append((y+dy, x+dx))
     return board
+def chord_open(board, clckdR, clckdC):
+    if not board[clckdR][clckdC].clicked: return
+    flag_count=0
+    for dy in range(-1, 2):
+        if 0<=clckdR+dy<len(board):
+            for dx in range(-1, 2):
+                if 0<=clckdC+dx<len(board[0]):
+                    if board[clckdR+dy][clckdC+dx].flagged: flag_count+=1
+    if flag_count==board[clckdR][clckdC].mines:
+        for dy in range(-1, 2):
+            if 0<=clckdR+dy<len(board):
+                for dx in range(-1, 2):
+                    if 0<=clckdC+dx<len(board[0]):
+                        target=board[clckdR+dy][clckdC+dx]
+                        if not target.clicked and not target.flagged:
+                            if target.mines==-1:
+                                target.exploded=True
+                                return "explode"
+                            else:
+                                flood_fill(board, clckdR+dy, clckdC+dx)
 def generate_board(mode):
     match mode:
         case "easy": 
@@ -216,6 +236,14 @@ while running:
                     for rs in squares:
                         for cs in rs:
                             if cs.hitbox.collidepoint(event.pos):
+                                if cs.clicked:
+                                    result=chord_open(squares, cs.row, cs.col)
+                                    if result=="explode":
+                                        explode=True
+                                        gameover=True
+                                        gameover_timer=0
+                                        lose_snd.play()
+                                    break
                                 if cs.flagged==True: continue
                                 if first_click:
                                     first_click=False
@@ -229,11 +257,7 @@ while running:
                                     lose_snd.play()
                                 else: 
                                     flood_fill(squares, cs.row, cs.col)
-                                    if confirm(squares):
-                                        explode=False
-                                        gameover=True
-                                        gameover_timer=0
-                                        win_snd.play()
+                                break
                 if event.button==3: #滑鼠右鍵（標旗）
                     for rs in squares:
                         for cs in rs:
@@ -247,9 +271,8 @@ while running:
             elif gameover:
                 explode=False
                 gameover=False
-                game_mode="unselected"
                 first_click=True
-                            
+                game_mode="unselected"
         
         
     if game_mode=="unselected":
@@ -263,7 +286,12 @@ while running:
         for row in squares:
             for square in row:
                 square.draw(gamesurface, gameover)
-
+        if not gameover and confirm(squares):
+            explode=False
+            gameover=True
+            gameover_timer=0
+            win_snd.play()
+            first_click=True
         if gameover:
             if explode: 
                 if gameover_timer<=0.2:
