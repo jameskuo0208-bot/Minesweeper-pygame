@@ -78,7 +78,6 @@ squares=[]
 remaining=0
 dt=0
 game_timer=0
-d_timer=0
 font=pygame.font.SysFont(None,40)
 class Square:
     def __init__(self, img, row, col, mode):
@@ -342,3 +341,4 @@ while running:
     pygame.display.flip()
     dt=clock.tick(60)/1000
 pygame.quit()
+
