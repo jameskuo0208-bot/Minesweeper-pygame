@@ -302,7 +302,7 @@ while running:
         gamesurface.blit(remainingIMG, (0, 0))
         counter_txt=font.render(f"x{remaining}", True, (0, 0, 0))
         gamesurface.blit(counter_txt, (remainingW*remaining_scale, remainingH*remaining_scale/4))
-        timer_txt=font.render(f"Elapsed Time:{int(game_timer//3600)}h {int((game_timer%3600)//60)}m {int(game_timer%60)}s", True, (0, 0, 0))
+        timer_txt=font.render(f"Elapsed Time:{int(game_timer//3600)}h {int((game_timer%3600)//60)}m {(game_timer%60):05.2f}s", True, (0, 0, 0))
         timerW, timerH=timer_txt.get_size()
         gamesurface.blit(timer_txt, (screenW/2-timerW/2, 0))
         for row in squares:
@@ -341,4 +341,5 @@ while running:
     pygame.display.flip()
     dt=clock.tick(60)/1000
 pygame.quit()
+
 
