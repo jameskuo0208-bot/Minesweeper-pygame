@@ -57,6 +57,10 @@ loseW, loseH=loseIMG.get_size()
 winW, winH=winIMG.get_size()
 hintW, hintH=hintIMG.get_size()
 hintIMG=pygame.transform.scale(hintIMG, (hintW*hint_scale, hintH*hint_scale))
+remainingIMG=pygame.image.load("assets/mine.png").convert_alpha()
+remainingW, remainingH=remainingIMG.get_size()
+remaining_scale=0.2
+remainingIMG=pygame.transform.scale(remainingIMG, (remainingW*remaining_scale, remainingH*remaining_scale))
 button_snd=pygame.mixer.Sound("assets/button.mp3")
 dig_snd=pygame.mixer.Sound("assets/dig.mp3")
 lose_snd=pygame.mixer.Sound("assets/lose.mp3")
@@ -71,7 +75,11 @@ unflag_snd=pygame.mixer.Sound("assets/unflag.mp3")
 # unflag_snd.set_volume(0.4)
 gameover_timer=0
 squares=[]
+remaining=0
 dt=0
+game_timer=0
+d_timer=0
+font=pygame.font.SysFont(None,40)
 class Square:
     def __init__(self, img, row, col, mode):
         self.img=img
@@ -221,16 +229,22 @@ while running:
                     squares=generate_board(game_mode)
                     button_snd.play()
                     mine_count=10
+                    remaining=mine_count
+                    
                 elif btn_hitbox2.collidepoint(event.pos):
                     game_mode="medium"
                     squares=generate_board(game_mode)
                     button_snd.play()
                     mine_count=40
+                    remaining=mine_count
+                    
                 elif btn_hitbox3.collidepoint(event.pos):
                     game_mode="hard"
                     squares=generate_board(game_mode)
                     button_snd.play()
                     mine_count=99
+                    remaining=mine_count
+                    
             elif not gameover:
                 if event.button==1: #滑鼠左鍵（點開格子）
                     for rs in squares:
@@ -265,16 +279,19 @@ while running:
                                 if cs.flagged: 
                                     cs.flagged=False
                                     unflag_snd.play()
+                                    remaining+=1
                                 else: 
                                     cs.flagged=True
                                     flag_snd.play()
+                                    remaining-=1
             elif gameover:
                 explode=False
                 gameover=False
                 first_click=True
                 game_mode="unselected"
+                game_timer=0
         
-        
+    if game_mode!="unselected" and not first_click and not gameover: game_timer+=dt
     if game_mode=="unselected":
         gamesurface.blit(bgIMG, (0, 0))
         gamesurface.blit(titleIMG, (456, 150))
@@ -283,10 +300,17 @@ while running:
         gamesurface.blit(hardbtnIMG, (910, 370))
     else:
         gamesurface.blit(bgIMG, (0, 0))
+        gamesurface.blit(remainingIMG, (0, 0))
+        counter_txt=font.render(f"x{remaining}", True, (0, 0, 0))
+        gamesurface.blit(counter_txt, (remainingW*remaining_scale, remainingH*remaining_scale/4))
+        timer_txt=font.render(f"Elapsed Time:{int(game_timer//3600)}h {int((game_timer%3600)//60)}m {int(game_timer%60)}s", True, (0, 0, 0))
+        timerW, timerH=timer_txt.get_size()
+        gamesurface.blit(timer_txt, (screenW/2-timerW/2, 0))
         for row in squares:
             for square in row:
                 square.draw(gamesurface, gameover)
         if not gameover and confirm(squares):
+            remaining=0
             explode=False
             gameover=True
             gameover_timer=0
@@ -317,5 +341,4 @@ while running:
     screen.blit(gamesurface, (0, 0))
     pygame.display.flip()
     dt=clock.tick(60)/1000
-
 pygame.quit()
