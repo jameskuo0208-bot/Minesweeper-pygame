@@ -12,7 +12,8 @@ pygame.display.set_caption("minesweeper")
 
 bgIMG=pygame.image.load("assets/bg.png").convert()
 titleIMG=pygame.image.load("assets/title.png").convert_alpha()
-
+iconIMG=pygame.image.load("assets/icon.png").convert_alpha()
+pygame.display.set_icon(iconIMG)
 game_mode="unselected"
 explode=False
 gameover=False
@@ -78,6 +79,7 @@ squares=[]
 remaining=0
 dt=0
 game_timer=0
+
 font=pygame.font.SysFont(None,40)
 class Square:
     def __init__(self, img, row, col, mode):
@@ -341,5 +343,3 @@ while running:
     pygame.display.flip()
     dt=clock.tick(60)/1000
 pygame.quit()
-
-
