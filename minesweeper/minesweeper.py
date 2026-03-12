@@ -99,8 +99,8 @@ class Square:
     def change(self, mode):
         match mode:
             case "easy": #if mode=="easy"
-                self.scale=0.3
-                gridx, gridy=7, 7
+                self.scale=0.25
+                gridx, gridy=9, 9
             case "medium": #match/case is available for Python 3.10+
                 self.scale=0.15
                 gridx, gridy=16, 16
@@ -196,7 +196,7 @@ def chord_open(board, clckdR, clckdC):
 def generate_board(mode):
     match mode:
         case "easy": 
-            gridX, gridY=7, 7
+            gridX, gridY=9, 9
         case "medium": 
             gridX, gridY=16, 16
         case "hard": 
