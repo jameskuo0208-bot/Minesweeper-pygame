@@ -18,6 +18,7 @@ game_mode="unselected"
 explode=False
 gameover=False
 first_click=True
+start_timing=False
 mine_count=0
 easybtnIMG=pygame.image.load("assets/difficulty-1.png").convert_alpha()
 medibtnIMG=pygame.image.load("assets/difficulty-2.png").convert_alpha()
@@ -260,8 +261,10 @@ while running:
                                         lose_snd.play()
                                     break
                                 if cs.flagged==True: continue
+                                if not start_timing: start_timing=True
                                 if first_click:
                                     first_click=False
+                                    start_timing=True
                                     dig_snd.play()
                                     place_mines(squares, mine_count, cs.row, cs.col)
                                     mark(squares)
@@ -277,6 +280,7 @@ while running:
                     for rs in squares:
                         for cs in rs:
                             if cs.hitbox.collidepoint(event.pos) and not cs.clicked:
+                                if not start_timing: start_timing=True
                                 if cs.flagged: 
                                     cs.flagged=False
                                     unflag_snd.play()
@@ -289,10 +293,11 @@ while running:
                 explode=False
                 gameover=False
                 first_click=True
+                start_timing=False
                 game_mode="unselected"
                 game_timer=0
         
-    if game_mode!="unselected" and not first_click and not gameover: game_timer+=dt
+    if game_mode!="unselected" and start_timing and not gameover: game_timer+=dt
     if game_mode=="unselected":
         gamesurface.blit(bgIMG, (0, 0))
         gamesurface.blit(titleIMG, (456, 150))
@@ -317,6 +322,7 @@ while running:
             gameover_timer=0
             win_snd.play()
             first_click=True
+            start_timing=False
         if gameover:
             if explode: 
                 if gameover_timer<=0.2:
