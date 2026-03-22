@@ -264,7 +264,6 @@ while running:
                                 if not start_timing: start_timing=True
                                 if first_click:
                                     first_click=False
-                                    start_timing=True
                                     dig_snd.play()
                                     place_mines(squares, mine_count, cs.row, cs.col)
                                     mark(squares)
